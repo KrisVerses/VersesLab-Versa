@@ -1,8 +1,8 @@
 import React from "react";
-import { RecentNote } from "../types/types.ts";
+import { Note } from "../types/types.ts";
 
 type RecentNotesProps = {
-  recentNotes: RecentNote[];
+  recentNotes: Note[];
 };
 
 export const RecentNotes: React.FC<RecentNotesProps> = ({ recentNotes }) => {
