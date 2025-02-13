@@ -1,3 +1,3 @@
-export default function Notes() {
+export function Notes() {
   return <h1>This is the Notes page</h1>;
 }
