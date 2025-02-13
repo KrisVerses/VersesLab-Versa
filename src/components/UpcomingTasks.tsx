@@ -1,6 +1,5 @@
 import React from "react";
-
-type Task = { id: number; description: string; dueDate: string };
+import { Task } from "../types/types";
 
 type UpcomingTasksProps = {
   tasks: Task[];

@@ -1,11 +1,5 @@
 import React from "react";
-
-type Appointment = {
-  id: number;
-  description: string;
-  dueDate: string;
-  time: string;
-};
+import { Appointment } from "../types/types";
 
 type UpcomingAppointmentProps = {
   appointment: Appointment;
