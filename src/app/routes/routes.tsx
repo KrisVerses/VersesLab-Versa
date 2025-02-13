@@ -8,9 +8,7 @@ import { Tasks } from "../../pages/Tasks";
 import { Appointments } from "../../pages/Appointments";
 import { Notes } from "../../pages/Notes";
 import { Layout } from "../../components/Layout";
-import { Summary } from "../../components/Summary";
 
-// Ensure your router is properly typed
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
