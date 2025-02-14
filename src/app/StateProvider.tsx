@@ -1,5 +1,6 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { Task, Appointment, Note } from "../types/types";
+import { isEqual } from "../utils/helpers";
 export const StateContext = createContext<any>(null);
 
 export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -7,13 +8,13 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   // initial state
   const initialTasks = [
-    { id: 1, description: "Task 1", dueDate: "02/15/25" },
-    { id: 2, description: "Task 2", dueDate: "02/16/25" },
+    { id: 1, description: "Task 1", dueDate: "2025-02-15", completed: false },
+    { id: 2, description: "Task 2", dueDate: "2025-02-16", completed: false },
   ];
   const initialAppointment = {
     id: 1,
     description: "Meeting with John",
-    dueDate: "02/12/25",
+    dueDate: "2025-12-14",
     time: "10:00 AM",
   };
 
@@ -25,6 +26,7 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   // state
   const [upcomingTasks, setUpcomingTasks] = useState<Task[]>(initialTasks);
   const [allTasks, setAllTasks] = useState<Task[]>(initialTasks);
+  const [completed, setCompleted] = useState<boolean>(false);
   const [nextAppointment, setNextAppointment] =
     useState<Appointment>(initialAppointment);
   const [allAppointments, setAllAppointments] = useState<Appointment[]>([
@@ -34,10 +36,31 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [allNotes, setAllNotes] = useState<Note[]>(initialRecentNotes);
 
   // state handlers
+  /* Tasks */
   const addTask = (newTask: Task) => {
     setAllTasks((prev) => [...prev, newTask]);
     // TODO: Write logic to get 2-3 tasks with closest upcoming due date
   };
+
+  const editTask = (updatedTask: Task) => {
+    setAllTasks((prev) =>
+      prev.map((task) =>
+        task.id === updatedTask.id && !isEqual(task, updatedTask)
+          ? updatedTask
+          : task
+      )
+    );
+  };
+
+  const toggleTaskCompletion = (taskId: number) => {
+    console.log("Updating...");
+    let updatedTasks = allTasks.map((task) =>
+      task.id === taskId ? { ...task, completed: !task.completed } : task
+    );
+    setAllTasks(updatedTasks);
+  };
+
+  /* Appointments */
 
   const updateAppointment = (newAppointment: Appointment) => {
     setAllAppointments((prev) => [...prev, newAppointment]);
@@ -55,6 +78,10 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     setUpcomingTasks,
     allTasks,
     setAllTasks,
+    editTask,
+    completed,
+    setCompleted,
+    toggleTaskCompletion,
     nextAppointment,
     setNextAppointment,
     allAppointments,
