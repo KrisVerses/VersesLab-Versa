@@ -7,20 +7,44 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   // initial state
-  const initialTasks = [
-    { id: 1, description: "Task 1", dueDate: "2025-02-15", completed: false },
-    { id: 2, description: "Task 2", dueDate: "2025-02-16", completed: false },
+  const initialTasks: Task[] = [
+    {
+      type: "task",
+      id: 1,
+      description: "Task 1",
+      dueDate: "2025-02-15",
+      completed: false,
+    },
+    {
+      type: "task",
+      id: 2,
+      description: "Task 2",
+      dueDate: "2025-02-16",
+      completed: false,
+    },
   ];
-  const initialAppointment = {
+  const initialAppointment: Appointment = {
+    type: "appointment",
     id: 1,
     description: "Meeting with John",
     dueDate: "2025-12-14",
     time: "10:00 AM",
+    completed: false,
   };
 
-  const initialRecentNotes = [
-    { id: 1, title: "Reflect on Weekly Wins" },
-    { id: 2, title: "Sketch wireframes for new project" },
+  const initialRecentNotes: Note[] = [
+    {
+      type: "note",
+      id: 1,
+      title: "Reflect on Weekly Wins",
+      description: "placeholder text",
+    },
+    {
+      type: "note",
+      id: 2,
+      title: "Sketch wireframes for new project",
+      description: "placeholder text",
+    },
   ];
 
   // state

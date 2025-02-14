@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { StateContext } from "../app/StateProvider";
-import { Task } from "../types/types";
+import { FormInput, Task } from "../types/types";
 import { DynamicFormModal } from "../components/DynamicFormModal";
 
 export const Tasks: React.FC = () => {
@@ -54,15 +54,18 @@ export const Tasks: React.FC = () => {
       {modalType === "task" && (
         <DynamicFormModal
           formType="task"
-          initialData={selectedTask} // Prefill with the selected task
+          initialData={!selectedTask ? undefined : selectedTask} // Prefill with the selected task
           onClose={() => {
             setModalType(null);
             setSelectedTask(null);
           }}
-          onSave={(updatedTask: Task) => {
-            editTask(updatedTask);
-            setModalType(null);
-            setSelectedTask(null);
+          onSave={(updatedData: FormInput) => {
+            if (!updatedData) return;
+            if (updatedData.type === "task") {
+              editTask(updatedData);
+              setModalType(null);
+              setSelectedTask(null);
+            }
           }}
         />
       )}

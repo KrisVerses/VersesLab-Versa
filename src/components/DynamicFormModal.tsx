@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Task, Appointment, Note } from "../types/types";
+import { FormInput } from "../types/types";
 
 type FormType = "task" | "appointment" | "note";
 
 type DynamicFormModalProps = {
   formType: FormType;
-  initialData?: Task | Appointment | Note;
+  initialData?: FormInput;
   onClose: () => void;
-  onSave: (data: Task | Appointment | Note) => void;
+  onSave: (data: FormInput) => void;
 };
 
 export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
@@ -30,7 +30,14 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    if (formType === "task") {
+      onSave({ ...formData, type: "task" }); // Return a Task
+    } else if (formType === "appointment") {
+      onSave({ ...formData, type: "appointment" }); // Return an Appointment
+    } else {
+      onSave({ ...formData, type: "note" }); // Return a Note
+    }
+    onClose();
     onClose();
   };
 
