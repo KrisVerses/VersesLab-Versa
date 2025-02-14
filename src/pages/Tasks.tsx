@@ -1,10 +1,19 @@
 import React, { useContext, useState } from "react";
 import { StateContext } from "../app/StateProvider";
 import { Task } from "../types/types";
+import { DynamicFormModal } from "../components/DynamicFormModal";
 
 export const Tasks: React.FC = () => {
   const { allTasks, setAllTasks, editTask, toggleTaskCompletion } =
     useContext(StateContext);
+
+  const [modalType, setModalType] = useState<"task" | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const handleEdit = (task: Task) => {
+    setSelectedTask(task);
+    setModalType("task");
+  };
 
   return (
     <div>
@@ -29,7 +38,10 @@ export const Tasks: React.FC = () => {
               <p className="text-gray-600">Due: {task.dueDate}</p>
             </div>
             <div className="mt-4 flex space-x-2">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                onClick={() => handleEdit(task)}
+              >
                 Edit
               </button>
               <button className="bg-red-500 text-white px-4 py-2 rounded-md">
@@ -39,6 +51,21 @@ export const Tasks: React.FC = () => {
           </div>
         ))}
       </div>
+      {modalType === "task" && (
+        <DynamicFormModal
+          formType="task"
+          initialData={selectedTask} // Prefill with the selected task
+          onClose={() => {
+            setModalType(null);
+            setSelectedTask(null);
+          }}
+          onSave={(updatedTask: Task) => {
+            editTask(updatedTask);
+            setModalType(null);
+            setSelectedTask(null);
+          }}
+        />
+      )}
       {/* Edit / Delete Buttons */}
       <div className="flex my-4">
         <div className="flex items-center mx-4">

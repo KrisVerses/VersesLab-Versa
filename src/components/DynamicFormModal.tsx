@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Task, Appointment, Note } from "../types/types";
 
 type FormType = "task" | "appointment" | "note";
 
 type DynamicFormModalProps = {
   formType: FormType;
+  initialData?: Task | Appointment | Note;
   onClose: () => void;
   onSave: (data: Task | Appointment | Note) => void;
 };
@@ -12,9 +13,14 @@ type DynamicFormModalProps = {
 export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
   formType,
   onClose,
+  initialData = {},
   onSave,
 }) => {
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<any>(initialData);
+
+  useEffect(() => {
+    setFormData(initialData);
+  }, [initialData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -38,12 +44,14 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
               name="description"
               placeholder="Task Description"
               className="input"
+              value={formData.description || " "}
               onChange={handleChange}
             />
             <input
               type="date"
               name="dueDate"
               className="input"
+              value={formData.dueDate || " "}
               onChange={handleChange}
             />
           </>
@@ -94,12 +102,13 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
         return null;
     }
   };
-
+  console.log("formData: " + JSON.stringify(formData));
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-xl font-bold mb-4">
-          Add {formType.charAt(0).toUpperCase() + formType.slice(1)}
+          {initialData ? "Edit" : "Add"}{" "}
+          {formType.charAt(0).toUpperCase() + formType.slice(1)}
         </h2>
         <form onSubmit={handleSubmit}>
           {renderFields()}
