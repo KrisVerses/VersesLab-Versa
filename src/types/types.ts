@@ -1,4 +1,9 @@
-export type Task = { id: number; description: string; dueDate: string };
+export type Task = {
+  id: number;
+  description: string;
+  dueDate: string;
+  completed: boolean;
+};
 export type Note = { id: number; title: string };
 export type Appointment = {
   id: number;
