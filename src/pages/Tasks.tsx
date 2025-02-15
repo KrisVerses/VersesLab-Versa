@@ -4,7 +4,7 @@ import { FormInput, Task } from "../types/types";
 import { DynamicFormModal } from "../components/DynamicFormModal";
 
 export const Tasks: React.FC = () => {
-  const { allTasks, setAllTasks, editTask, toggleTaskCompletion } =
+  const { allTasks, setAllTasks, editTask, deleteTask, toggleTaskCompletion } =
     useContext(StateContext);
 
   const [modalType, setModalType] = useState<"task" | null>(null);
@@ -37,6 +37,8 @@ export const Tasks: React.FC = () => {
               </div>
               <p className="text-gray-600">Due: {task.dueDate}</p>
             </div>
+
+            {/* Edit / Delete Buttons */}
             <div className="mt-4 flex space-x-2">
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded-md"
@@ -44,7 +46,10 @@ export const Tasks: React.FC = () => {
               >
                 Edit
               </button>
-              <button className="bg-red-500 text-white px-4 py-2 rounded-md">
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded-md"
+                onClick={() => deleteTask(task.id)}
+              >
                 Delete
               </button>
             </div>
@@ -69,7 +74,8 @@ export const Tasks: React.FC = () => {
           }}
         />
       )}
-      {/* Edit / Delete Buttons */}
+
+      {/* Filter / Sort Options */}
       <div className="flex my-4">
         <div className="flex items-center mx-4">
           <p className="mr-4">Filter Options: </p>

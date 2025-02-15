@@ -76,6 +76,10 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     );
   };
 
+  const deleteTask = (taskId: number) => {
+    setAllTasks((prev) => prev.filter((task) => task.id !== taskId));
+  };
+
   const toggleTaskCompletion = (taskId: number) => {
     console.log("Updating...");
     let updatedTasks = allTasks.map((task) =>
@@ -103,6 +107,7 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     allTasks,
     setAllTasks,
     editTask,
+    deleteTask,
     completed,
     setCompleted,
     toggleTaskCompletion,
