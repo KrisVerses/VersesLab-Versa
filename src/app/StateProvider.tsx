@@ -62,22 +62,36 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   // state handlers
   /* Tasks */
   const addTask = (newTask: Task) => {
-    setAllTasks((prev) => [...prev, newTask]);
-    // TODO: Write logic to get 2-3 tasks with closest upcoming due date
+    setAllTasks((prev) => {
+      const updatedTasks = [...prev, newTask];
+      syncUpcomingTasks(updatedTasks);
+      return updatedTasks;
+    });
   };
 
   const editTask = (updatedTask: Task) => {
-    setAllTasks((prev) =>
-      prev.map((task) =>
+    setAllTasks((prevTasks) => {
+      const updatedTasks = prevTasks.map((task) =>
         task.id === updatedTask.id && !isEqual(task, updatedTask)
           ? updatedTask
           : task
-      )
-    );
+      );
+      syncUpcomingTasks(updatedTasks);
+      return updatedTasks;
+    });
   };
 
   const deleteTask = (taskId: number) => {
-    setAllTasks((prev) => prev.filter((task) => task.id !== taskId));
+    setAllTasks((prevTasks) => {
+      const updatedTasks = prevTasks.filter((task) => task.id !== taskId);
+      syncUpcomingTasks(updatedTasks);
+      return updatedTasks;
+    });
+  };
+
+  const syncUpcomingTasks = (tasks: Task[]) => {
+    console.log("updating upcoming tasks...");
+    setUpcomingTasks(tasks.slice(0, 3));
   };
 
   const toggleTaskCompletion = (taskId: number) => {

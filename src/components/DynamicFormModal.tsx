@@ -1,43 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { FormInput } from "../types/types";
-
-type FormType = "task" | "appointment" | "note";
-
-type DynamicFormModalProps = {
-  formType: FormType;
-  initialData?: FormInput;
-  onClose: () => void;
-  onSave: (data: FormInput) => void;
-};
+import { DynamicFormModalProps, FormInput } from "../types/types";
+import { isEqual } from "../utils/helpers";
 
 export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
   formType,
-  onClose,
   initialData = {},
+  onClose,
   onSave,
 }) => {
-  const [formData, setFormData] = useState<any>(initialData);
-
-  useEffect(() => {
-    setFormData(initialData);
-  }, [initialData]);
+  const [formData, setFormData] = useState<FormInput>({
+    id: Date.now(),
+    description: "",
+    dueDate: "",
+    completed: false,
+    ...initialData,
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
+
+  // useEffect(() => {
+  //   setFormData(initialData);
+  // }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formType === "task") {
-      onSave({ ...formData, type: "task" }); // Return a Task
-    } else if (formType === "appointment") {
-      onSave({ ...formData, type: "appointment" }); // Return an Appointment
-    } else {
-      onSave({ ...formData, type: "note" }); // Return a Note
-    }
-    onClose();
+    const formattedData = {
+      ...formData,
+      type: formType,
+      id: formData.id || Date.now(), // Ensure id is always set
+      completed: formData.completed ?? false, // Default completed to false
+    };
+    onSave(formattedData);
     onClose();
   };
 
@@ -51,14 +52,14 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
               name="description"
               placeholder="Task Description"
               className="input"
-              value={formData.description || " "}
+              value={formData.description || ""}
               onChange={handleChange}
             />
             <input
               type="date"
               name="dueDate"
               className="input"
-              value={formData.dueDate || " "}
+              value={formData.dueDate || ""}
               onChange={handleChange}
             />
           </>
@@ -109,7 +110,7 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
         return null;
     }
   };
-  console.log("formData: " + JSON.stringify(formData));
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
