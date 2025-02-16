@@ -25,4 +25,12 @@ export type QuickActionsProps = {
   >;
 };
 
+export type DynamicFormModalProps = {
+  formType: FormType;
+  initialData?: FormInput;
+  onClose: () => void;
+  onSave: (data: FormInput) => void;
+};
+
 export type FormInput = Task | Note | Appointment;
+export type FormType = "task" | "appointment" | "note";
