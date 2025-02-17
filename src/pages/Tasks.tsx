@@ -4,8 +4,17 @@ import { FormInput, Task } from "../types/types";
 import { DynamicFormModal } from "../components/DynamicFormModal";
 
 export const Tasks: React.FC = () => {
-  const { allTasks, setAllTasks, editTask, deleteTask, toggleTaskCompletion } =
-    useContext(StateContext);
+  const {
+    allTasks,
+    setAllTasks,
+    editTask,
+    deleteTask,
+    toggleTaskCompletion,
+    filter,
+    setFilter,
+    filteredTasks,
+    handleFilterChange,
+  } = useContext(StateContext);
 
   const [modalType, setModalType] = useState<"task" | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -20,7 +29,7 @@ export const Tasks: React.FC = () => {
       <h1 className="text-3xl font-bold mb-8 border-b-2 p-4">Tasks</h1>
       <button className="border px-4 py-2 rounded-full">+ Add New Task</button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {allTasks.map((task: Task) => (
+        {(filter === "All" ? allTasks : filteredTasks).map((task: Task) => (
           <div key={task.id} className="bg-gray-100 p-4 rounded-md shadow-md">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
@@ -79,10 +88,14 @@ export const Tasks: React.FC = () => {
       <div className="flex my-4">
         <div className="flex items-center mx-4">
           <p className="mr-4">Filter Options: </p>
-          <select className="rounded-lg py-1 px-2">
-            <option>All</option>
-            <option>Completed</option>
-            <option>Incomplete</option>
+          <select
+            value={filter}
+            onChange={handleFilterChange}
+            className="rounded-lg py-1 px-2"
+          >
+            <option value={"All"}>All</option>
+            <option value={"Completed"}>Completed</option>
+            <option value={"Incompleted"}>Incomplete</option>
           </select>
         </div>
         <div className="flex items-center mx-4">

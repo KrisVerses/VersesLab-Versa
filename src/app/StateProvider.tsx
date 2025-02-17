@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { Task, Appointment, Note } from "../types/types";
 import { isEqual } from "../utils/helpers";
+import { Tasks } from "../pages/Tasks";
 export const StateContext = createContext<any>(null);
 
 export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -58,6 +59,7 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   ]);
   const [recentNotes, setRecentNotes] = useState<Note[]>(initialRecentNotes);
   const [allNotes, setAllNotes] = useState<Note[]>(initialRecentNotes);
+  const [filter, setFilter] = useState<any>("All");
 
   // state handlers
   /* Tasks */
@@ -115,6 +117,15 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     setRecentNotes((prev) => [newNote, ...prev].slice(0, 3));
   };
 
+  // Filter Options
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilter(e.target.value);
+  };
+
+  const filteredTasks = allTasks.filter((task) =>
+    filter === "Completed" ? task.completed : !task.completed
+  );
+
   const state = {
     upcomingTasks,
     setUpcomingTasks,
@@ -136,6 +147,10 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     addTask,
     updateAppointment,
     addNote,
+    filter,
+    setFilter,
+    filteredTasks,
+    handleFilterChange,
   };
 
   return (
