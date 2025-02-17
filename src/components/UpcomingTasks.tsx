@@ -10,11 +10,15 @@ export const UpcomingTasks: React.FC<UpcomingTasksProps> = ({ tasks }) => {
     <div className="border-r-2">
       <h3 className="text-lg font-bold ">Upcoming Tasks</h3>
       <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            [ ] {task.description} (Due: {task.dueDate})
-          </li>
-        ))}
+        {tasks.length > 0 ? (
+          tasks.map((task) => (
+            <li key={task.id}>
+              [ ] {task.description} (Due: {task.dueDate})
+            </li>
+          ))
+        ) : (
+          <p>No upcoming tasks</p>
+        )}
       </ul>
     </div>
   );

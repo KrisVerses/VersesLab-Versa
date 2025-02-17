@@ -49,8 +49,8 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   ];
 
   // state
-  const [upcomingTasks, setUpcomingTasks] = useState<Task[]>(initialTasks);
-  const [allTasks, setAllTasks] = useState<Task[]>(initialTasks);
+  const [upcomingTasks, setUpcomingTasks] = useState<Task[]>([]);
+  const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [completed, setCompleted] = useState<boolean>(false);
   const [nextAppointment, setNextAppointment] =
     useState<Appointment>(initialAppointment);
@@ -60,6 +60,7 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [recentNotes, setRecentNotes] = useState<Note[]>(initialRecentNotes);
   const [allNotes, setAllNotes] = useState<Note[]>(initialRecentNotes);
   const [filter, setFilter] = useState<any>("All");
+  const [sortBy, setSortBy] = useState<any>("Recently");
 
   // state handlers
   /* Tasks */
@@ -117,15 +118,6 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     setRecentNotes((prev) => [newNote, ...prev].slice(0, 3));
   };
 
-  // Filter Options
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter(e.target.value);
-  };
-
-  const filteredTasks = allTasks.filter((task) =>
-    filter === "Completed" ? task.completed : !task.completed
-  );
-
   const state = {
     upcomingTasks,
     setUpcomingTasks,
@@ -149,8 +141,8 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     addNote,
     filter,
     setFilter,
-    filteredTasks,
-    handleFilterChange,
+    sortBy,
+    setSortBy,
   };
 
   return (
