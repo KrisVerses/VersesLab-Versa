@@ -5,6 +5,7 @@ import { DynamicFormModal } from "../components/DynamicFormModal";
 
 export const Tasks: React.FC = () => {
   const {
+    addTask,
     allTasks,
     setAllTasks,
     editTask,
@@ -24,10 +25,17 @@ export const Tasks: React.FC = () => {
     setModalType("task");
   };
 
+  const handleAdd = () => {
+    setSelectedTask(null);
+    setModalType("task");
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8 border-b-2 p-4">Tasks</h1>
-      <button className="border px-4 py-2 rounded-full">+ Add New Task</button>
+      <button className="border px-4 py-2 rounded-full" onClick={handleAdd}>
+        + Add New Task
+      </button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {(filter === "All" ? allTasks : filteredTasks).map((task: Task) => (
           <div key={task.id} className="bg-gray-100 p-4 rounded-md shadow-md">
@@ -75,11 +83,13 @@ export const Tasks: React.FC = () => {
           }}
           onSave={(updatedData: FormInput) => {
             if (!updatedData) return;
-            if (updatedData.type === "task") {
+            if (updatedData.type === "task" && selectedTask) {
               editTask(updatedData);
-              setModalType(null);
-              setSelectedTask(null);
+            } else {
+              addTask(updatedData);
             }
+            setModalType(null);
+            setSelectedTask(null);
           }}
         />
       )}

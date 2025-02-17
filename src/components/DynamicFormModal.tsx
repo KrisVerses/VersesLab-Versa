@@ -35,8 +35,8 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
     const formattedData = {
       ...formData,
       type: formType,
-      id: formData.id || Date.now(), // Ensure id is always set
-      completed: formData.completed ?? false, // Default completed to false
+      id: formData.id || Date.now(),
+      completed: formData.completed ?? false,
     };
     onSave(formattedData);
     onClose();

@@ -1,10 +1,5 @@
 import React from "react";
-
-type QuickActionsProps = {
-  changeModalType: React.Dispatch<
-    React.SetStateAction<"task" | "appointment" | "note" | null>
-  >;
-};
+import { QuickActionsProps } from "../types/types";
 
 export const QuickActions: React.FC<QuickActionsProps> = ({
   changeModalType,
