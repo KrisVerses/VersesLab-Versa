@@ -7,23 +7,6 @@ export const StateContext = createContext<any>(null);
 export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // initial state
-  const initialTasks: Task[] = [
-    {
-      type: "task",
-      id: 1,
-      description: "Task 1",
-      dueDate: "2025-02-15",
-      completed: false,
-    },
-    {
-      type: "task",
-      id: 2,
-      description: "Task 2",
-      dueDate: "2025-02-16",
-      completed: false,
-    },
-  ];
   const initialAppointment: Appointment = {
     type: "appointment",
     id: 1,
@@ -60,14 +43,13 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [recentNotes, setRecentNotes] = useState<Note[]>(initialRecentNotes);
   const [allNotes, setAllNotes] = useState<Note[]>(initialRecentNotes);
   const [filter, setFilter] = useState<any>("All");
-  const [sortBy, setSortBy] = useState<any>("Recently");
+  const [sortBy, setSortBy] = useState<any>("Due Date");
 
   // state handlers
   /* Tasks */
   const addTask = (newTask: Task) => {
     setAllTasks((prev) => {
       const updatedTasks = [...prev, newTask];
-      syncUpcomingTasks(updatedTasks);
       return updatedTasks;
     });
   };
@@ -79,7 +61,6 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
           ? updatedTask
           : task
       );
-      syncUpcomingTasks(updatedTasks);
       return updatedTasks;
     });
   };
@@ -87,22 +68,58 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   const deleteTask = (taskId: number) => {
     setAllTasks((prevTasks) => {
       const updatedTasks = prevTasks.filter((task) => task.id !== taskId);
-      syncUpcomingTasks(updatedTasks);
       return updatedTasks;
     });
   };
 
-  const syncUpcomingTasks = (tasks: Task[]) => {
-    console.log("updating upcoming tasks...");
-    setUpcomingTasks(tasks.slice(0, 3));
-  };
-
   const toggleTaskCompletion = (taskId: number) => {
     console.log("Updating...");
-    let updatedTasks = allTasks.map((task) =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    );
-    setAllTasks(updatedTasks);
+
+    setAllTasks((prevTasks) => {
+      const updatedTasks = prevTasks.map((task) =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      );
+      return updatedTasks;
+    });
+  };
+
+  const sortByTasks = (tasks: Task[]) => {
+    const sortedTasks = [...tasks];
+
+    switch (sortBy) {
+      case "Due Date":
+        return sortedTasks.sort(
+          (a, b) =>
+            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+        );
+      case "Recently":
+        return sortedTasks.sort((a, b) => b.id - a.id);
+      case "Priority":
+        console.log("Sorting by priority...");
+        return sortedTasks.sort(
+          (a, b) =>
+            (priorityOrder[a.priority] || 0) - (priorityOrder[b.priority] || 0)
+        );
+        break;
+      default:
+        return sortedTasks;
+    }
+  };
+
+  const filteredTasks = () => {
+    console.log("Sorting by: " + sortBy);
+
+    let tasks = allTasks;
+
+    // Apply filtering first
+    if (filter === "Completed") {
+      tasks = tasks.filter((task) => task.completed);
+    } else if (filter === "Incompleted") {
+      tasks = tasks.filter((task) => !task.completed);
+    }
+
+    // Apply sorting
+    return sortByTasks(tasks);
   };
 
   /* Appointments */
@@ -116,6 +133,17 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     setAllNotes((prev) => [...prev, newNote]);
     //TODO: Write logic to display 2-3 most recent notes
     setRecentNotes((prev) => [newNote, ...prev].slice(0, 3));
+  };
+
+  // Utility
+  const priorityOrder: Record<"High" | "Medium" | "Low" | number> = {
+    High: 1,
+    Medium: 2,
+    Low: 3,
+  };
+
+  const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(e.target.value);
   };
 
   const state = {
@@ -143,6 +171,10 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     setFilter,
     sortBy,
     setSortBy,
+    sortByTasks,
+    filteredTasks,
+    priorityOrder,
+    handleSortByChange,
   };
 
   return (

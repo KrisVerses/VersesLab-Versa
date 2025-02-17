@@ -4,6 +4,7 @@ export type Task = {
   description: string;
   dueDate: string;
   completed: boolean;
+  priority: "High" | "Medium" | "Low";
 };
 export type Note = {
   type: "note";

@@ -6,14 +6,15 @@ import { DynamicFormModal } from "../components/DynamicFormModal";
 export const Tasks: React.FC = () => {
   const {
     addTask,
-    allTasks,
     editTask,
     deleteTask,
+    allTasks,
     toggleTaskCompletion,
     filter,
     sortBy,
     setFilter,
-    setSortBy,
+    handleSortByChange,
+    filteredTasks,
   } = useContext(StateContext);
 
   const [modalType, setModalType] = useState<"task" | null>(null);
@@ -32,48 +33,6 @@ export const Tasks: React.FC = () => {
   // Filter / Sort Options
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilter(e.target.value);
-  };
-
-  const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortBy(e.target.value);
-  };
-
-  const sortByTasks = (tasks: Task[]) => {
-    const sortedTasks = [...tasks]; // Create a copy to avoid mutating the original
-
-    switch (sortBy) {
-      case "Due Date":
-        return sortedTasks.sort(
-          (a, b) =>
-            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-        );
-      case "Recently":
-        return sortedTasks.sort((a, b) => b.id - a.id);
-      case "Priority":
-        console.log("Sorting by priority...");
-        // return sortedTasks.sort(
-        //   (a, b) => (b.priority || 0) - (a.priority || 0)
-        // );
-        break;
-      default:
-        return sortedTasks;
-    }
-  };
-
-  const filteredTasks = () => {
-    console.log("Sorting by: " + sortBy);
-
-    let tasks = allTasks;
-
-    // Apply filtering first
-    if (filter === "Completed") {
-      tasks = tasks.filter((task) => task.completed);
-    } else if (filter === "Incompleted") {
-      tasks = tasks.filter((task) => !task.completed);
-    }
-
-    // Apply sorting
-    return sortByTasks(tasks);
   };
 
   const tasks = filteredTasks();
@@ -106,25 +65,47 @@ export const Tasks: React.FC = () => {
                 <p className="text-gray-600">Due: {task.dueDate}</p>
               </div>
 
-              {/* Edit / Delete Buttons */}
-              <div className="mt-4 flex space-x-2">
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                  onClick={() => handleEdit(task)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded-md"
-                  onClick={() => deleteTask(task.id)}
-                >
-                  Delete
-                </button>
+              <div className="flex items-center justify-between">
+                {/* Edit / Delete Buttons */}
+                <div className="mt-4 flex space-x-2">
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                    onClick={() => handleEdit(task)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+                    onClick={() => deleteTask(task.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+                <div className="">
+                  <p
+                    className={`border-2 border-gray-300 px-4 py-2 rounded-full ${
+                      task.priority === "High"
+                        ? "bg-red-600 text-white"
+                        : task.priority === "Medium"
+                        ? "bg-yellow-300"
+                        : "bg-green-400"
+                    }`}
+                  >
+                    {task.priority}
+                  </p>
+                </div>
               </div>
             </div>
           ))
+        ) : allTasks.length > 0 ? (
+          <p>
+            No tasks match the selected filter and sort criteria. Try adjusting
+            your filters or adding a new task.
+          </p>
         ) : (
-          <p>There are no Tasks currently. Please add Tasks to list</p>
+          <p>
+            There are no Tasks currently. Click 'Add New Task' to get started!
+          </p>
         )}
       </div>
       {modalType === "task" && (
@@ -169,8 +150,8 @@ export const Tasks: React.FC = () => {
             value={sortBy}
             className="rounded-lg py-1 px-2"
           >
-            <option value={"Recently"}>Recently Added</option>
             <option value={"Due Date"}>Due Date</option>
+            <option value={"Recently"}>Recently Added</option>
             <option value={"Priority"}>Priority</option>
           </select>
         </div>

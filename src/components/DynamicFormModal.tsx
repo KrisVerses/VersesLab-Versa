@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { DynamicFormModalProps, FormInput } from "../types/types";
 import { isEqual } from "../utils/helpers";
+import { StateContext } from "../app/StateProvider";
 
 export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
   formType,
@@ -13,6 +14,7 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
     description: "",
     dueDate: "",
     completed: false,
+    priority: "",
     ...initialData,
   });
 
@@ -26,10 +28,6 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
     }));
   };
 
-  // useEffect(() => {
-  //   setFormData(initialData);
-  // }, [initialData]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formattedData = {
@@ -38,6 +36,8 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
       id: formData.id || Date.now(),
       completed: formData.completed ?? false,
     };
+    console.log("data: ");
+    console.log(formattedData);
     onSave(formattedData);
     onClose();
   };
@@ -62,6 +62,19 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
               value={formData.dueDate || ""}
               onChange={handleChange}
             />
+            <select
+              className="input"
+              name="priority"
+              value={formData.priority || "Select Priority"}
+              onChange={handleChange}
+            >
+              <option disabled value="Select Priority">
+                Select Priority
+              </option>
+              <option value={"High"}>High</option>
+              <option value={"Medium"}>Medium</option>
+              <option value={"Low"}>Low</option>
+            </select>
           </>
         );
       case "appointment":
