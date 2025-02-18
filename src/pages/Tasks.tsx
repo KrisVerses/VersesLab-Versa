@@ -40,13 +40,22 @@ export const Tasks: React.FC = () => {
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8 border-b-2 p-4">Tasks</h1>
-      <button className="border px-4 py-2 rounded-full" onClick={handleAdd}>
-        + Add New Task
-      </button>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="w-full text-center">
+        <button
+          className="bg-blue-800 text-white border px-4 py-2 rounded-full"
+          onClick={handleAdd}
+        >
+          + Add New Task
+        </button>
+      </div>
+
+      <div className="max-w-3xl mx-auto w-full gap-4">
         {tasks.length > 0 ? (
           tasks?.map((task: Task) => (
-            <div key={task.id} className="bg-gray-100 p-4 rounded-md shadow-md">
+            <div
+              key={task.id}
+              className="bg-gray-100 p-4 rounded-md shadow-md my-4"
+            >
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2">
                   <input
@@ -69,13 +78,13 @@ export const Tasks: React.FC = () => {
                 {/* Edit / Delete Buttons */}
                 <div className="mt-4 flex space-x-2">
                   <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg"
                     onClick={() => handleEdit(task)}
                   >
                     Edit
                   </button>
                   <button
-                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg"
                     onClick={() => deleteTask(task.id)}
                   >
                     Delete
@@ -130,8 +139,8 @@ export const Tasks: React.FC = () => {
       )}
 
       {/* Filter / Sort Options */}
-      <div className="flex my-4">
-        <div className="flex items-center mx-4">
+      <div className="flex justify-center my-4">
+        <div className="flex items-center mx-10">
           <p className="mr-4">Filter Options: </p>
           <select
             value={filter}
