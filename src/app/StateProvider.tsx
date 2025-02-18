@@ -136,11 +136,10 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const editAppointment = (updatedAppointment: Appointment) => {
+    console.log("Editing Appointment:", updatedAppointment);
     setAllAppointments((prevAppointments) => {
       const updatedAppts = prevAppointments.map((appt) =>
-        appt.id === updatedAppointment.id && !isEqual(appt, updatedAppointment)
-          ? updatedAppointment
-          : appt
+        appt.id === updatedAppointment.id ? updatedAppointment : appt
       );
       return updatedAppts;
     });

@@ -10,7 +10,7 @@ export const Summary: React.FC = () => {
   return (
     <div className="grid grid-cols-3 gap-4 bg-white p-6 shadow-md rounded-lg">
       <UpcomingTasks />
-      <UpcomingAppointment appointment={nextAppointment} />
+      <UpcomingAppointment />
       <RecentNotes recentNotes={recentNotes} />
     </div>
   );

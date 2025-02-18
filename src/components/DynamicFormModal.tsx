@@ -13,17 +13,22 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
     dueDate: "",
     completed: false,
     priority: "",
+    time: "",
     ...initialData,
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+
+    setFormData((prevData) => {
+      const updatedData = { ...prevData, [name]: value };
+      console.log("Updated Form Data:", updatedData);
+      return updatedData;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -94,8 +99,8 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
             />
             <input
               type="time"
-              value={formData.time || " "}
               name="time"
+              value={formData.time || ""}
               className="input"
               onChange={handleChange}
             />

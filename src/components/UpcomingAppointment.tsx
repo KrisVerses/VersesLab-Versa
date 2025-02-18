@@ -1,21 +1,20 @@
-import React from "react";
-import { Appointment } from "../types/types";
+import React, { useContext } from "react";
+import { StateContext } from "../app/StateProvider";
 
-type UpcomingAppointmentProps = {
-  appointment: Appointment;
-};
+export const UpcomingAppointment: React.FC = () => {
+  const { nextAppointment } = useContext(StateContext);
+  const isEmpty = !nextAppointment || Object.keys(nextAppointment).length === 0;
 
-export const UpcomingAppointment: React.FC<UpcomingAppointmentProps> = ({
-  appointment,
-}) => {
-  return (
-    <div className="border-r-2">
+  return isEmpty ? (
+    <p className="text-gray-500 italic">No upcoming appointments.</p>
+  ) : (
+    <div className="border-r-2 p-4">
       <h3 className="text-lg font-bold">Next Appointment</h3>
-      <p>Title: {appointment.description}</p>
-      <div className="flex">
-        <p>Date: {appointment.dueDate}</p>
+      <p>Title: {nextAppointment.description}</p>
+      <div className="flex items-center">
+        <p>Date: {nextAppointment.dueDate}</p>
         <p className="mx-2"> | </p>
-        <p>Time: {appointment.time}</p>
+        <p>Time: {nextAppointment.time}</p>
       </div>
     </div>
   );

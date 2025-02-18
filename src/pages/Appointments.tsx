@@ -91,6 +91,7 @@ export const Appointments: React.FC = () => {
             setSelectedAppt(null);
           }}
           onSave={(updatedData: FormInput) => {
+            console.log("Saving Updated Appointment:", updatedData);
             if (!updatedData) return;
             if (updatedData.type === "appointment" && selectedAppt) {
               editAppointment(updatedData);
