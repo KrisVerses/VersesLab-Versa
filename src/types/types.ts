@@ -33,5 +33,11 @@ export type DynamicFormModalProps = {
   onSave: (data: FormInput) => void;
 };
 
+export type CalendarViewProps = {
+  allAppointments: Appointment[];
+  setSelectedDate: (date: Date | null) => void;
+  selectedDate: Date;
+};
+
 export type FormInput = Task | Note | Appointment;
 export type FormType = "task" | "appointment" | "note";

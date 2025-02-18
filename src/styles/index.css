@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom calendar styles */
+.react-calendar {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.react-calendar__tile--active {
+  background-color: #3b82f6 !important; /* Tailwind Blue */
+  color: white;
+  border-radius: 6px;
+}
