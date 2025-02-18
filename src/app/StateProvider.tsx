@@ -100,7 +100,6 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
           (a, b) =>
             (priorityOrder[a.priority] || 0) - (priorityOrder[b.priority] || 0)
         );
-        break;
       default:
         return sortedTasks;
     }
