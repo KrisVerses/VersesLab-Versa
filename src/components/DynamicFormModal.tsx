@@ -1,7 +1,5 @@
 import React, { useContext, useState } from "react";
 import { DynamicFormModalProps, FormInput } from "../types/types";
-import { isEqual } from "../utils/helpers";
-import { StateContext } from "../app/StateProvider";
 
 export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
   formType,
@@ -35,9 +33,8 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
       type: formType,
       id: formData.id || Date.now(),
       completed: formData.completed ?? false,
+      time: formData.time || "00:00",
     };
-    console.log("data: ");
-    console.log(formattedData);
     onSave(formattedData);
     onClose();
   };
@@ -83,6 +80,7 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
             <input
               type="text"
               name="description"
+              value={formData.description || " "}
               placeholder="Appointment Title"
               className="input"
               onChange={handleChange}
@@ -90,11 +88,13 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
             <input
               type="date"
               name="dueDate"
+              value={formData.dueDate || " "}
               className="input"
               onChange={handleChange}
             />
             <input
               type="time"
+              value={formData.time || " "}
               name="time"
               className="input"
               onChange={handleChange}

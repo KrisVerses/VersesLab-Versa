@@ -12,7 +12,7 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     id: 1,
     description: "Meeting with John",
     dueDate: "2025-12-14",
-    time: "10:00 AM",
+    time: "",
     completed: false,
   };
 
@@ -35,11 +35,8 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [upcomingTasks, setUpcomingTasks] = useState<Task[]>([]);
   const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [completed, setCompleted] = useState<boolean>(false);
-  const [nextAppointment, setNextAppointment] =
-    useState<Appointment>(initialAppointment);
-  const [allAppointments, setAllAppointments] = useState<Appointment[]>([
-    initialAppointment,
-  ]);
+  const [nextAppointment, setNextAppointment] = useState<Appointment>();
+  const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
   const [recentNotes, setRecentNotes] = useState<Note[]>(initialRecentNotes);
   const [allNotes, setAllNotes] = useState<Note[]>(initialRecentNotes);
   const [filter, setFilter] = useState<any>("All");
@@ -128,13 +125,32 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     //TODO: Write logic to get next appointment
   };
 
+  const addAppointment = (newAppointment: Appointment) => {
+    setAllAppointments((prev) => [...prev, newAppointment]);
+  };
+
+  const deleteAppointment = (apptId: number) => {
+    setAllAppointments((prev) => {
+      return prev.filter((appt) => appt.id !== apptId);
+    });
+  };
+
+  const editAppointment = (updatedAppointment: Appointment) => {
+    setAllAppointments((prevAppointments) => {
+      const updatedAppts = prevAppointments.map((appt) =>
+        appt.id === updatedAppointment.id && !isEqual(appt, updatedAppointment)
+          ? updatedAppointment
+          : appt
+      );
+      return updatedAppts;
+    });
+  };
+
+  // Note
+
   const addNote = (newNote: Note) => {
     setAllNotes((prev) => [...prev, newNote]);
     setRecentNotes((prev) => [newNote, ...prev].slice(0, 3));
-  };
-
-  const addAppointment = (newAppointment: Appointment) => {
-    setAllAppointments((prev) => [...prev, newAppointment]);
   };
 
   // Utility
@@ -163,12 +179,14 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     allAppointments,
     setAllAppointments,
     addAppointment,
+    deleteAppointment,
     recentNotes,
     setRecentNotes,
     allNotes,
     setAllNotes,
     addTask,
     updateAppointment,
+    editAppointment,
     addNote,
     filter,
     setFilter,
