@@ -123,19 +123,22 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
 
   /* Appointments */
 
-  const updateAppointment = (newAppointment: Appointment) => {
-    setAllAppointments((prev) => [...prev, newAppointment]);
+  const updateAppointment = (updatedAppointment: Appointment) => {
+    setAllAppointments((prev) => [...prev, updatedAppointment]);
     //TODO: Write logic to get next appointment
   };
 
   const addNote = (newNote: Note) => {
     setAllNotes((prev) => [...prev, newNote]);
-    //TODO: Write logic to display 2-3 most recent notes
     setRecentNotes((prev) => [newNote, ...prev].slice(0, 3));
   };
 
+  const addAppointment = (newAppointment: Appointment) => {
+    setAllAppointments((prev) => [...prev, newAppointment]);
+  };
+
   // Utility
-  const priorityOrder: Record<"High" | "Medium" | "Low" | number> = {
+  const priorityOrder: Record<"High" | "Medium" | "Low", number> = {
     High: 1,
     Medium: 2,
     Low: 3,
@@ -159,6 +162,7 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     setNextAppointment,
     allAppointments,
     setAllAppointments,
+    addAppointment,
     recentNotes,
     setRecentNotes,
     allNotes,
