@@ -103,8 +103,6 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const filteredTasks = () => {
-    console.log("Sorting by: " + sortBy);
-
     let tasks = allTasks;
 
     // Apply filtering first
@@ -120,13 +118,32 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
 
   /* Appointments */
 
+  useEffect(() => {
+    console.log("Updated allAppointments:", allAppointments); // Debugging log
+    if (allAppointments.length > 0) {
+      const sortedAppointments = [...allAppointments].sort(
+        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+      );
+      console.log("Next Appointment Set:", sortedAppointments[0]); // Debugging log
+      setNextAppointment(sortedAppointments[0]); // Ensures the closest appointment updates immediately
+    } else {
+      setNextAppointment(null);
+    }
+  }, [allAppointments]);
+
   const updateAppointment = (updatedAppointment: Appointment) => {
-    setAllAppointments((prev) => [...prev, updatedAppointment]);
-    //TODO: Write logic to get next appointment
+    setAllAppointments((prev) => {
+      //TODO: Write logic to get next appointment
+      return [...prev, updatedAppointment];
+    });
   };
 
   const addAppointment = (newAppointment: Appointment) => {
-    setAllAppointments((prev) => [...prev, newAppointment]);
+    setAllAppointments((prev) => {
+      const updatedAppointments = [...prev, newAppointment];
+      console.log("Updated Appointments after add:", updatedAppointments); // Debug log
+      return updatedAppointments;
+    });
   };
 
   const deleteAppointment = (apptId: number) => {
@@ -136,11 +153,11 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const editAppointment = (updatedAppointment: Appointment) => {
-    console.log("Editing Appointment:", updatedAppointment);
     setAllAppointments((prevAppointments) => {
       const updatedAppts = prevAppointments.map((appt) =>
         appt.id === updatedAppointment.id ? updatedAppointment : appt
       );
+      console.log("Updated Appointments after edit:", updatedAppts); // Debug log
       return updatedAppts;
     });
   };

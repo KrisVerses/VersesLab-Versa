@@ -42,7 +42,7 @@ export const Tasks: React.FC = () => {
       <h1 className="text-3xl font-bold mb-8 border-b-2 p-4">Tasks</h1>
       <div className="w-full text-center">
         <button
-          className="bg-blue-800 text-white border px-4 py-2 rounded-full"
+          className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
           onClick={handleAdd}
         >
           + Add New Task

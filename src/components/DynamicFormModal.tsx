@@ -8,13 +8,12 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
   onSave,
 }) => {
   const [formData, setFormData] = useState<FormInput>({
-    id: Date.now(),
-    description: "",
-    dueDate: "",
-    completed: false,
-    priority: "",
-    time: "",
-    ...initialData,
+    id: initialData?.id || Date.now(), // ✅ Use existing ID if available
+    description: initialData?.description || "",
+    dueDate: initialData?.dueDate || "",
+    completed: initialData?.completed ?? false,
+    priority: initialData?.priority || "",
+    time: initialData?.time || "",
   });
 
   const handleChange = (
@@ -128,12 +127,12 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
         return null;
     }
   };
-
+  const isEmpty = !initialData || Object.keys(initialData).length === 0;
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-xl font-bold mb-4">
-          {initialData ? "Edit" : "Add"}{" "}
+          {isEmpty ? "Add" : "Edit"}{" "}
           {formType.charAt(0).toUpperCase() + formType.slice(1)}
         </h2>
         <form onSubmit={handleSubmit}>

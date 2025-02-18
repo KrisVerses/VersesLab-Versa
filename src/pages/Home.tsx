@@ -12,6 +12,8 @@ export const Home: React.FC = () => {
   >(null);
 
   const handleSave = (data: Task | Appointment | Note) => {
+    console.log("saving data...");
+    console.log(data);
     if (modalType === "task") addTask(data as Task);
     if (modalType === "appointment") updateAppointment(data as Appointment);
     if (modalType === "note") addNote(data as Note);

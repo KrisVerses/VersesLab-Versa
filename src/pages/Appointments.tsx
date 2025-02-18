@@ -42,6 +42,25 @@ export const Appointments: React.FC = () => {
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
       />
+      {selectedDate && (
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold">
+            Appointments for {selectedDate.toDateString()}
+          </h3>
+          <ul>
+            {allAppointments
+              .filter(
+                (appt: Appointment) =>
+                  appt.dueDate === selectedDate.toISOString().split("T")[0]
+              )
+              .map((appt: Appointment) => (
+                <li key={appt.id} className="p-2 border-b">
+                  {appt.description} at {convertMilitaryToRegular(appt.time)}
+                </li>
+              ))}
+          </ul>
+        </div>
+      )}
 
       {/* Upcoming Appointments */}
       <div className="max-w-3xl mx-auto mt-6">
@@ -93,12 +112,15 @@ export const Appointments: React.FC = () => {
           onSave={(updatedData: FormInput) => {
             console.log("Saving Updated Appointment:", updatedData);
             if (!updatedData) return;
+
             if (updatedData.type === "appointment" && selectedAppt) {
               editAppointment(updatedData);
             } else {
               addAppointment(updatedData);
             }
+
             setModalType(null);
+            setSelectedAppt(null);
           }}
         />
       )}
