@@ -95,12 +95,10 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   /* Appointments */
 
   useEffect(() => {
-    console.log("Updated allAppointments:", allAppointments); // Debugging log
     if (allAppointments.length > 0) {
       const sortedAppointments = [...allAppointments].sort(
         (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
       );
-      console.log("Next Appointment Set:", sortedAppointments[0]); // Debugging log
       setNextAppointment(sortedAppointments[0]); // Ensures the closest appointment updates immediately
     } else {
       setNextAppointment(null);
@@ -117,7 +115,6 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   const addAppointment = (newAppointment: Appointment) => {
     setAllAppointments((prev) => {
       const updatedAppointments = [...prev, newAppointment];
-      console.log("Updated Appointments after add:", updatedAppointments); // Debug log
       return updatedAppointments;
     });
   };
@@ -133,7 +130,6 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
       const updatedAppts = prevAppointments.map((appt) =>
         appt.id === updatedAppointment.id ? updatedAppointment : appt
       );
-      console.log("Updated Appointments after edit:", updatedAppts); // Debug log
       return updatedAppts;
     });
   };
@@ -150,6 +146,7 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
       let updatedNotes = prev.map((note) =>
         note.id === updatedNote.id ? updatedNote : note
       );
+      setRecentNotes(updatedNotes);
       return updatedNotes;
     });
   };
@@ -157,6 +154,7 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   const deleteNote = (noteId: number) => {
     setAllNotes((prev) => {
       let updatedNotes = prev.filter((note) => note.id !== noteId);
+      setRecentNotes(updatedNotes);
       return updatedNotes;
     });
   };
