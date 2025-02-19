@@ -7,38 +7,14 @@ export const StateContext = createContext<any>(null);
 export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const initialAppointment: Appointment = {
-    type: "appointment",
-    id: 1,
-    description: "Meeting with John",
-    dueDate: "2025-12-14",
-    time: "",
-    completed: false,
-  };
-
-  const initialRecentNotes: Note[] = [
-    {
-      type: "note",
-      id: 1,
-      title: "Reflect on Weekly Wins",
-      description: "placeholder text",
-    },
-    {
-      type: "note",
-      id: 2,
-      title: "Sketch wireframes for new project",
-      description: "placeholder text",
-    },
-  ];
-
   // state
   const [upcomingTasks, setUpcomingTasks] = useState<Task[]>([]);
   const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [completed, setCompleted] = useState<boolean>(false);
   const [nextAppointment, setNextAppointment] = useState<Appointment>();
   const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
-  const [recentNotes, setRecentNotes] = useState<Note[]>(initialRecentNotes);
-  const [allNotes, setAllNotes] = useState<Note[]>(initialRecentNotes);
+  const [recentNotes, setRecentNotes] = useState<Note[]>([]);
+  const [allNotes, setAllNotes] = useState<Note[]>([]);
   const [filter, setFilter] = useState<any>("All");
   const [sortBy, setSortBy] = useState<any>("Due Date");
 
@@ -169,6 +145,22 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     setRecentNotes((prev) => [newNote, ...prev].slice(0, 3));
   };
 
+  const editNote = (updatedNote: Note) => {
+    setAllNotes((prev) => {
+      let updatedNotes = prev.map((note) =>
+        note.id === updatedNote.id ? updatedNote : note
+      );
+      return updatedNotes;
+    });
+  };
+
+  const deleteNote = (noteId: number) => {
+    setAllNotes((prev) => {
+      let updatedNotes = prev.filter((note) => note.id !== noteId);
+      return updatedNotes;
+    });
+  };
+
   // Utility
   const priorityOrder: Record<"High" | "Medium" | "Low", number> = {
     High: 1,
@@ -200,10 +192,12 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     setRecentNotes,
     allNotes,
     setAllNotes,
+    editNote,
+    addNote,
+    deleteNote,
     addTask,
     updateAppointment,
     editAppointment,
-    addNote,
     filter,
     setFilter,
     sortBy,
