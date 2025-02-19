@@ -28,7 +28,7 @@ export const UpcomingTasks: React.FC = () => {
             </li>
           ))
         ) : (
-          <p>No upcoming tasks</p>
+          <p className="text-gray-500 italic">No upcoming tasks</p>
         )}
       </ul>
     </div>
