@@ -10,7 +10,7 @@ export type Note = {
   type: "note";
   id: number;
   title: string;
-  description: string;
+  content: string;
 };
 export type Appointment = {
   type: "appointment";

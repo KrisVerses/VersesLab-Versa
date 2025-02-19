@@ -8,12 +8,14 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
   onSave,
 }) => {
   const [formData, setFormData] = useState<FormInput>({
-    id: initialData?.id || Date.now(), // ✅ Use existing ID if available
+    id: initialData?.id || Date.now(),
     description: initialData?.description || "",
+    content: initialData?.content || "",
     dueDate: initialData?.dueDate || "",
     completed: initialData?.completed ?? false,
     priority: initialData?.priority || "",
     time: initialData?.time || "",
+    title: initialData?.title || "",
   });
 
   const handleChange = (
@@ -22,10 +24,8 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
     >
   ) => {
     const { name, value } = e.target;
-
     setFormData((prevData) => {
       const updatedData = { ...prevData, [name]: value };
-      console.log("Updated Form Data:", updatedData);
       return updatedData;
     });
   };
@@ -112,12 +112,14 @@ export const DynamicFormModal: React.FC<DynamicFormModalProps> = ({
               type="text"
               name="title"
               placeholder="Note Title"
+              value={formData.title || ""}
               className="input"
               onChange={handleChange}
             />
             <textarea
               name="content"
               placeholder="Write your note here..."
+              value={formData.content || ""}
               className="input h-24"
               onChange={handleChange}
             />
