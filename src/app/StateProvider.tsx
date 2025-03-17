@@ -2,211 +2,113 @@ import React, { createContext, useEffect, useState } from "react";
 import { Task, Appointment, Note } from "../types/types";
 import { isEqual } from "../utils/helpers";
 import { Tasks } from "../pages/Tasks";
-export const StateContext = createContext<any>(null);
+
+interface StateContextType {
+  tasks: Task[];
+  addTask: (task: Task) => void;
+  updateTask: (task: Task) => void;
+  deleteTask: (taskId: number) => void;
+  toggleTaskCompletion: (taskId: number) => void;
+  filteredTasks: () => Task[];
+  appointments: Appointment[];
+  addAppointment: (appointment: Appointment) => void;
+  updateAppointment: (appointment: Appointment) => void;
+  deleteAppointment: (appointmentId: number) => void;
+  notes: Note[];
+  addNote: (note: Note) => void;
+  editNote: (note: Note) => void;
+  deleteNote: (noteId: number) => void;
+}
+
+export const StateContext = createContext<StateContextType | null>(null);
 
 export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // state
-  const [upcomingTasks, setUpcomingTasks] = useState<Task[]>([]);
-  const [allTasks, setAllTasks] = useState<Task[]>([]);
-  const [completed, setCompleted] = useState<boolean>(false);
-  const [nextAppointment, setNextAppointment] = useState<Appointment>();
-  const [allAppointments, setAllAppointments] = useState<Appointment[]>([]);
-  const [recentNotes, setRecentNotes] = useState<Note[]>([]);
-  const [allNotes, setAllNotes] = useState<Note[]>([]);
-  const [filter, setFilter] = useState<any>("All");
-  const [sortBy, setSortBy] = useState<any>("Due Date");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
 
-  // state handlers
-  /* Tasks */
   const addTask = (newTask: Task) => {
-    setAllTasks((prev) => {
-      const updatedTasks = [...prev, newTask];
-      return updatedTasks;
-    });
+    setTasks(prev => [...prev, newTask]);
   };
 
-  const editTask = (updatedTask: Task) => {
-    setAllTasks((prevTasks) => {
-      const updatedTasks = prevTasks.map((task) =>
-        task.id === updatedTask.id && !isEqual(task, updatedTask)
-          ? updatedTask
-          : task
-      );
-      return updatedTasks;
-    });
+  const updateTask = (updatedTask: Task) => {
+    setTasks(prev => prev.map(task => 
+      task.id === updatedTask.id ? updatedTask : task
+    ));
   };
 
   const deleteTask = (taskId: number) => {
-    setAllTasks((prevTasks) => {
-      const updatedTasks = prevTasks.filter((task) => task.id !== taskId);
-      return updatedTasks;
-    });
+    setTasks(prev => prev.filter(task => task.id !== taskId));
   };
 
   const toggleTaskCompletion = (taskId: number) => {
-    console.log("Updating...");
-
-    setAllTasks((prevTasks) => {
-      const updatedTasks = prevTasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      );
-      return updatedTasks;
-    });
-  };
-
-  const sortByTasks = (tasks: Task[]) => {
-    const sortedTasks = [...tasks];
-
-    switch (sortBy) {
-      case "Due Date":
-        return sortedTasks.sort(
-          (a, b) =>
-            new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-        );
-      case "Recently":
-        return sortedTasks.sort((a, b) => b.id - a.id);
-      case "Priority":
-        console.log("Sorting by priority...");
-        return sortedTasks.sort(
-          (a, b) =>
-            (priorityOrder[a.priority] || 0) - (priorityOrder[b.priority] || 0)
-        );
-      default:
-        return sortedTasks;
-    }
+    setTasks(prev => prev.map(task => 
+      task.id === taskId ? { ...task, completed: !task.completed } : task
+    ));
   };
 
   const filteredTasks = () => {
-    let tasks = allTasks;
-
-    // Apply filtering first
-    if (filter === "Completed") {
-      tasks = tasks.filter((task) => task.completed);
-    } else if (filter === "Incompleted") {
-      tasks = tasks.filter((task) => !task.completed);
-    }
-
-    // Apply sorting
-    return sortByTasks(tasks);
-  };
-
-  /* Appointments */
-
-  useEffect(() => {
-    if (allAppointments.length > 0) {
-      const sortedAppointments = [...allAppointments].sort(
-        (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-      );
-      setNextAppointment(sortedAppointments[0]); // Ensures the closest appointment updates immediately
-    } else {
-      setNextAppointment(null);
-    }
-  }, [allAppointments]);
-
-  const updateAppointment = (updatedAppointment: Appointment) => {
-    setAllAppointments((prev) => {
-      //TODO: Write logic to get next appointment
-      return [...prev, updatedAppointment];
+    // Sort tasks by due date, with incomplete tasks first
+    return [...tasks].sort((a, b) => {
+      // First sort by completion status
+      if (!a.completed && b.completed) return -1;
+      if (a.completed && !b.completed) return 1;
+      
+      // Then sort by due date
+      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
     });
   };
 
   const addAppointment = (newAppointment: Appointment) => {
-    setAllAppointments((prev) => {
-      const updatedAppointments = [...prev, newAppointment];
-      return updatedAppointments;
-    });
+    setAppointments(prev => [...prev, newAppointment]);
   };
 
-  const deleteAppointment = (apptId: number) => {
-    setAllAppointments((prev) => {
-      return prev.filter((appt) => appt.id !== apptId);
-    });
+  const updateAppointment = (updatedAppointment: Appointment) => {
+    setAppointments(prev => prev.map(appointment => 
+      appointment.id === updatedAppointment.id ? updatedAppointment : appointment
+    ));
   };
 
-  const editAppointment = (updatedAppointment: Appointment) => {
-    setAllAppointments((prevAppointments) => {
-      const updatedAppts = prevAppointments.map((appt) =>
-        appt.id === updatedAppointment.id ? updatedAppointment : appt
-      );
-      return updatedAppts;
-    });
+  const deleteAppointment = (appointmentId: number) => {
+    setAppointments(prev => prev.filter(appointment => appointment.id !== appointmentId));
   };
-
-  // Note
 
   const addNote = (newNote: Note) => {
-    setAllNotes((prev) => [...prev, newNote]);
-    setRecentNotes((prev) => [newNote, ...prev].slice(0, 3));
+    setNotes(prev => [...prev, newNote]);
   };
 
   const editNote = (updatedNote: Note) => {
-    setAllNotes((prev) => {
-      let updatedNotes = prev.map((note) =>
-        note.id === updatedNote.id ? updatedNote : note
-      );
-      setRecentNotes(updatedNotes);
-      return updatedNotes;
-    });
+    setNotes(prev => prev.map(note => 
+      note.id === updatedNote.id ? updatedNote : note
+    ));
   };
 
   const deleteNote = (noteId: number) => {
-    setAllNotes((prev) => {
-      let updatedNotes = prev.filter((note) => note.id !== noteId);
-      setRecentNotes(updatedNotes);
-      return updatedNotes;
-    });
+    setNotes(prev => prev.filter(note => note.id !== noteId));
   };
 
-  // Utility
-  const priorityOrder: Record<"High" | "Medium" | "Low", number> = {
-    High: 1,
-    Medium: 2,
-    Low: 3,
-  };
-
-  const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortBy(e.target.value);
-  };
-
-  const state = {
-    upcomingTasks,
-    setUpcomingTasks,
-    allTasks,
-    setAllTasks,
-    editTask,
-    deleteTask,
-    completed,
-    setCompleted,
-    toggleTaskCompletion,
-    nextAppointment,
-    setNextAppointment,
-    allAppointments,
-    setAllAppointments,
-    addAppointment,
-    deleteAppointment,
-    recentNotes,
-    setRecentNotes,
-    allNotes,
-    setAllNotes,
-    editNote,
-    addNote,
-    deleteNote,
+  const value: StateContextType = {
+    tasks,
     addTask,
-    updateAppointment,
-    editAppointment,
-    filter,
-    setFilter,
-    sortBy,
-    setSortBy,
-    sortByTasks,
+    updateTask,
+    deleteTask,
+    toggleTaskCompletion,
     filteredTasks,
-    priorityOrder,
-    handleSortByChange,
+    appointments,
+    addAppointment,
+    updateAppointment,
+    deleteAppointment,
+    notes,
+    addNote,
+    editNote,
+    deleteNote,
   };
 
   return (
-    <StateContext.Provider value={state}>{children}</StateContext.Provider>
+    <StateContext.Provider value={value}>
+      {children}
+    </StateContext.Provider>
   );
 };

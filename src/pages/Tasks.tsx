@@ -1,169 +1,169 @@
-import React, { useContext, useState } from "react";
+import React, { useState, useContext } from "react";
 import { StateContext } from "../app/StateProvider";
-import { FormInput, Task } from "../types/types";
 import { DynamicFormModal } from "../components/DynamicFormModal";
+import { Task, FormInput } from "../types/types";
+import { PlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { motion } from "framer-motion";
 
 export const Tasks: React.FC = () => {
-  const {
-    addTask,
-    editTask,
-    deleteTask,
-    allTasks,
-    toggleTaskCompletion,
-    filter,
-    sortBy,
-    setFilter,
-    handleSortByChange,
-    filteredTasks,
-  } = useContext(StateContext);
+  const context = useContext(StateContext);
+  if (!context) throw new Error("Tasks must be used within a StateProvider");
+  
+  const { tasks, addTask, updateTask, deleteTask } = context;
+  const [showModal, setShowModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [filter, setFilter] = useState<"all" | "completed" | "pending">("all");
+  const [sortBy, setSortBy] = useState<"date" | "priority">("date");
 
-  const [modalType, setModalType] = useState<"task" | null>(null);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-
-  const handleEdit = (task: Task) => {
-    setSelectedTask(task);
-    setModalType("task");
+  const handleSave = (data: FormInput) => {
+    if (data.type !== "task") return;
+    const taskData = data as Task;
+    
+    if (editingTask) {
+      updateTask({ ...taskData, id: editingTask.id });
+    } else {
+      addTask(taskData);
+    }
+    setShowModal(false);
+    setEditingTask(null);
   };
 
-  const handleAdd = () => {
-    setSelectedTask(null);
-    setModalType("task");
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
-  // Filter / Sort Options
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter(e.target.value);
-  };
+  const filteredTasks = tasks
+    .filter((task: Task) => {
+      if (filter === "completed") return task.completed;
+      if (filter === "pending") return !task.completed;
+      return true;
+    })
+    .sort((a: Task, b: Task) => {
+      if (sortBy === "date") {
+        return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+      }
+      return b.priority.localeCompare(a.priority);
+    });
 
-  const tasks = filteredTasks();
+  const getPriorityColor = (priority: string) => {
+    switch (priority.toLowerCase()) {
+      case "high":
+        return "text-red-500";
+      case "medium":
+        return "text-yellow-500";
+      case "low":
+        return "text-green-500";
+      default:
+        return "text-gray-500";
+    }
+  };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8 border-b-2 p-4">Tasks</h1>
-      <div className="w-full text-center">
-        <button
-          className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
-          onClick={handleAdd}
-        >
-          + Add New Task
-        </button>
-      </div>
-
-      <div className="max-w-3xl mx-auto w-full gap-4">
-        {tasks.length > 0 ? (
-          tasks?.map((task: Task) => (
-            <div
-              key={task.id}
-              className="bg-gray-100 p-4 rounded-md shadow-md my-4"
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col gap-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Tasks
+            </h1>
+            <button
+              onClick={() => setShowModal(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 transition-all shadow-lg hover:shadow-xl"
             >
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={task.completed}
-                    onChange={() => toggleTaskCompletion(task.id)}
-                  />
-                  <p
-                    className={
-                      task.completed ? "line-through text-gray-500" : ""
-                    }
-                  >
-                    {task.description}
-                  </p>
-                </div>
-                <p className="text-gray-600">Due: {task.dueDate}</p>
-              </div>
+              <PlusIcon className="w-5 h-5" />
+              Add Task
+            </button>
+          </div>
 
-              <div className="flex items-center justify-between">
-                {/* Edit / Delete Buttons */}
-                <div className="mt-4 flex space-x-2">
-                  <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-                    onClick={() => handleEdit(task)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg"
-                    onClick={() => deleteTask(task.id)}
-                  >
-                    Delete
-                  </button>
+          <div className="flex gap-4 flex-wrap">
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as "all" | "completed" | "pending")}
+              className="px-4 py-2 rounded-lg bg-white border border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="all">All Tasks</option>
+              <option value="completed">Completed</option>
+              <option value="pending">Pending</option>
+            </select>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as "date" | "priority")}
+              className="px-4 py-2 rounded-lg bg-white border border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="date">Sort by Date</option>
+              <option value="priority">Sort by Priority</option>
+            </select>
+          </div>
+
+          <div className="grid gap-4">
+            {filteredTasks.map((task: Task) => (
+              <motion.div
+                key={task.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => updateTask({ ...task, completed: !task.completed })}
+                      className="w-5 h-5 rounded-md border-gray-300 text-blue-500 focus:ring-blue-500"
+                    />
+                    <div>
+                      <h3 className={`text-lg font-medium ${task.completed ? "line-through text-gray-400" : ""}`}>
+                        {task.description}
+                      </h3>
+                      <div className="flex gap-4 mt-2">
+                        <span className={`text-sm ${getPriorityColor(task.priority)}`}>
+                          {task.priority} Priority
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          Due: {formatDate(task.dueDate)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingTask(task);
+                        setShowModal(true);
+                      }}
+                      className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <PencilIcon className="w-5 h-5 text-gray-500" />
+                    </button>
+                    <button
+                      onClick={() => deleteTask(task.id)}
+                      className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <TrashIcon className="w-5 h-5 text-red-500" />
+                    </button>
+                  </div>
                 </div>
-                <div className="">
-                  <p
-                    className={`border-2 border-gray-300 px-4 py-2 rounded-full ${
-                      task.priority === "High"
-                        ? "bg-red-600 text-white"
-                        : task.priority === "Medium"
-                        ? "bg-yellow-300"
-                        : "bg-green-400"
-                    }`}
-                  >
-                    {task.priority}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))
-        ) : allTasks.length > 0 ? (
-          <p>
-            No tasks match the selected filter and sort criteria. Try adjusting
-            your filters or adding a new task.
-          </p>
-        ) : (
-          <p>
-            There are no Tasks currently. Click 'Add New Task' to get started!
-          </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {showModal && (
+          <DynamicFormModal
+            formType="task"
+            onClose={() => {
+              setShowModal(false);
+              setEditingTask(null);
+            }}
+            onSave={handleSave}
+            initialData={editingTask || undefined}
+          />
         )}
-      </div>
-      {modalType === "task" && (
-        <DynamicFormModal
-          formType="task"
-          initialData={!selectedTask ? undefined : selectedTask} // Prefill with the selected task
-          onClose={() => {
-            setModalType(null);
-            setSelectedTask(null);
-          }}
-          onSave={(updatedData: FormInput) => {
-            if (!updatedData) return;
-            if (updatedData.type === "task" && selectedTask) {
-              editTask(updatedData);
-            } else {
-              addTask(updatedData);
-            }
-            setModalType(null);
-            setSelectedTask(null);
-          }}
-        />
-      )}
-
-      {/* Filter / Sort Options */}
-      <div className="flex justify-center my-4">
-        <div className="flex items-center mx-10">
-          <p className="mr-4">Filter Options: </p>
-          <select
-            value={filter}
-            onChange={handleFilterChange}
-            className="rounded-lg py-1 px-2"
-          >
-            <option value={"All"}>All</option>
-            <option value={"Completed"}>Completed</option>
-            <option value={"Incompleted"}>Incomplete</option>
-          </select>
-        </div>
-        <div className="flex items-center mx-4">
-          <p className="mr-2">Sort By: </p>
-          <select
-            onChange={handleSortByChange}
-            value={sortBy}
-            className="rounded-lg py-1 px-2"
-          >
-            <option value={"Due Date"}>Due Date</option>
-            <option value={"Recently"}>Recently Added</option>
-            <option value={"Priority"}>Priority</option>
-          </select>
-        </div>
       </div>
     </div>
   );

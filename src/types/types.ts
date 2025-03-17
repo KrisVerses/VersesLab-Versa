@@ -11,6 +11,7 @@ export type Note = {
   id: number;
   title: string;
   content: string;
+  createdAt: string;
 };
 export type Appointment = {
   type: "appointment";

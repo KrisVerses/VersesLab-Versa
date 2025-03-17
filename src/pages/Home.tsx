@@ -18,18 +18,26 @@ export const Home: React.FC = () => {
     if (modalType === "appointment") updateAppointment(data as Appointment);
     if (modalType === "note") addNote(data as Note);
   };
+
+  // Function to format date strings into YYYY-MM-DD format for date input fields
+  const formatDateForInput = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  };
+
   return (
-    <div>
-      <h1 className="text-4xl font-bold text-center mb-6">Welcome to Versa!</h1>
-      <Summary />
-      <QuickActions changeModalType={setModalType} />
-      {modalType && (
-        <DynamicFormModal
-          formType={modalType}
-          onClose={() => setModalType(null)}
-          onSave={handleSave}
-        />
-      )}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Summary />
+        {/* <QuickActions changeModalType={setModalType} /> */}
+        {modalType && (
+          <DynamicFormModal
+            formType={modalType}
+            onClose={() => setModalType(null)}
+            onSave={handleSave}
+          />
+        )}
+      </div>
     </div>
   );
 };
